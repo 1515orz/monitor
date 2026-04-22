@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jetson Monitor</title>
+  <script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
+  <script defer src="/static/app.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; color: #eee; font-family: monospace; height: 100vh; overflow: hidden; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+      height: 40px;
+    }
+    header h1 { font-size: 0.8rem; letter-spacing: 0.15em; color: #aaa; }
+
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #444; transition: background 0.3s;
+    }
+    .dot.ok { background: #4caf50; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 10px;
+      padding: 10px;
+      height: calc(100vh - 40px);
+    }
+
+    .video-panel {
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .video-panel img { width: 100%; height: 100%; object-fit: contain; }
+
+    .side-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 12px;
+    }
+    .card-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 0.8rem;
+      border-bottom: 1px solid #222;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: #666; }
+    .row .val { color: #4caf50; }
+    .row .val.bad { color: #f44336; }
+
+    .placeholder {
+      background: #161616;
+      border: 1px dashed #2a2a2a;
+      border-radius: 4px;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body x-data="monitor()">
+  <header>
+    <h1>JETSON MONITOR</h1>
+    <div class="dot" :class="{ ok: connected }" title="WebSocket"></div>
+  </header>
+
+  <div class="layout">
+    <div class="video-panel">
+      <img src="/video_feed" alt="camera">
+    </div>
+
+    <div class="side-panel">
+      <!-- System card -->
+      <div class="card">
+        <div class="card-title">SYSTEM</div>
+        <div class="row">
+          <span class="label">FPS</span>
+          <span class="val" x-text="state.system?.fps?.toFixed(1) ?? '--'"></span>
+        </div>
+        <div class="row">
+          <span class="label">Redis</span>
+          <span class="val" :class="{ bad: !state.system?.redis }"
+                x-text="state.system ? (state.system.redis ? 'OK' : 'DOWN') : '--'"></span>
+        </div>
+        <div class="row">
+          <span class="label">ZMQ Camera</span>
+          <span class="val" :class="{ bad: !state.system?.zmq }"
+                x-text="state.system ? (state.system.zmq ? 'OK' : 'DOWN') : '--'"></span>
+        </div>
+      </div>
+
+      <!-- Future cards land here -->
+      <div class="placeholder">SCENE GRAPH — NEXT PHASE</div>
+      <div class="placeholder">LLM DECISIONS — NEXT PHASE</div>
+    </div>
+  </div>
+</body>
+</html>

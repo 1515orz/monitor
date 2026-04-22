@@ -1,11 +1,5 @@
-cat > .gitignore << 'EOF'
 .DS_Store
 __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
-EOF
-
-git add .gitignore
-git commit -m "chore: add .gitignore"
-git push

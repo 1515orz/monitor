@@ -21,7 +21,7 @@ _frame_times: list[float] = []
 _lock = Lock()
 _show_bboxes: bool = True
 
-_model = YOLO(MODEL_PATH)
+_model = None
 
 
 def get_fps() -> float:
@@ -51,6 +51,9 @@ def _update_fps() -> None:
 
 
 def _detect_and_draw(frame: np.ndarray) -> np.ndarray:
+    global _model
+    if _model is None:
+        _model = YOLO(MODEL_PATH)
     results = _model(frame, imgsz=320, verbose=False)
     return results[0].plot()
 

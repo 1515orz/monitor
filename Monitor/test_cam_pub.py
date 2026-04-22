@@ -2,7 +2,7 @@ import cv2
 import zmq
 import struct
 
-def gst_pipeline(sensor_id=1, width=640, height=480, fps=30):
+def gst_pipeline(sensor_id=0, width=640, height=480, fps=30):
     return (
         f"nvarguscamerasrc sensor-id={sensor_id} ! "
         f"video/x-raw(memory:NVMM), width={width}, height={height}, "

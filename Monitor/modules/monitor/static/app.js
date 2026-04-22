@@ -2,6 +2,7 @@ function monitor() {
   return {
     connected: false,
     state: {},
+    bboxEnabled: true,
     _retryDelay: 500,
 
     init() {
@@ -27,6 +28,15 @@ function monitor() {
       };
 
       ws.onerror = () => ws.close();
+    },
+
+    async toggleBbox() {
+      this.bboxEnabled = !this.bboxEnabled;
+      await fetch('/api/bbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: this.bboxEnabled }),
+      });
     },
   };
 }

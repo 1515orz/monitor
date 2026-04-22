@@ -13,9 +13,10 @@ class SourceEntry:
     async def _refresh_loop(self) -> None:
         while True:
             try:
-                result = self.fetcher()
-                if asyncio.iscoroutine(result):
-                    result = await result
+                if asyncio.iscoroutinefunction(self.fetcher):
+                    result = await self.fetcher()
+                else:
+                    result = await asyncio.to_thread(self.fetcher)
                 self.cached_value = result
             except Exception:
                 pass

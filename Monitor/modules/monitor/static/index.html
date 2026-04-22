@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jetson Monitor</title>
+  <script defer src="/static/app.js?v=3"></script>
   <script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
-  <script defer src="/static/app.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #111; color: #eee; font-family: monospace; height: 100vh; overflow: hidden; }
@@ -64,14 +64,39 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
+      padding: 6px 0;
       font-size: 0.8rem;
       border-bottom: 1px solid #222;
+      min-height: 32px;
     }
     .row:last-child { border-bottom: none; }
     .row .label { color: #666; }
     .row .val { color: #4caf50; }
     .row .val.bad { color: #f44336; }
+
+    .toggle {
+      position: relative;
+      width: 44px; height: 24px;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: #333;
+      transition: background 0.2s;
+    }
+    .toggle-track.on { background: #4caf50; }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #888;
+      transition: left 0.2s, background 0.2s;
+      pointer-events: none;
+    }
+    .toggle-thumb.on { left: 23px; background: #fff; }
 
     .placeholder {
       background: #161616;
@@ -97,7 +122,6 @@
     </div>
 
     <div class="side-panel">
-      <!-- System card -->
       <div class="card">
         <div class="card-title">SYSTEM</div>
         <div class="row">
@@ -114,9 +138,15 @@
           <span class="val" :class="{ bad: !state.system?.zmq }"
                 x-text="state.system ? (state.system.zmq ? 'OK' : 'DOWN') : '--'"></span>
         </div>
+        <div class="row">
+          <span class="label">Detection Boxes</span>
+          <div class="toggle" @click="toggleBbox()">
+            <div class="toggle-track" :class="{ on: bboxEnabled }"></div>
+            <div class="toggle-thumb" :class="{ on: bboxEnabled }"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Future cards land here -->
       <div class="placeholder">SCENE GRAPH — NEXT PHASE</div>
       <div class="placeholder">LLM DECISIONS — NEXT PHASE</div>
     </div>

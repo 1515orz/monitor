@@ -5,9 +5,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
+from modules.monitor import video_stream
 from modules.monitor.sources.system import fetch_system_status
 from modules.monitor.state_registry import StateRegistry
 from modules.monitor.video_stream import generate_mjpeg
@@ -39,7 +41,18 @@ async def video_feed():
     return StreamingResponse(
         generate_mjpeg(),
         media_type="multipart/x-mixed-replace; boundary=frame",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+class BboxRequest(BaseModel):
+    enabled: bool
+
+
+@app.post("/api/bbox")
+async def set_bbox(req: BboxRequest):
+    video_stream.set_show_bboxes(req.enabled)
+    return JSONResponse({"enabled": req.enabled})
 
 
 @app.websocket("/ws/state")

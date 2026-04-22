@@ -1,10 +1,14 @@
 import asyncio
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class SourceEntry:
+    key: str
     fetcher: Callable
     interval: float
     cached_value: Any = None
@@ -19,7 +23,7 @@ class SourceEntry:
                     result = await asyncio.to_thread(self.fetcher)
                 self.cached_value = result
             except Exception:
-                pass
+                logger.exception("fetcher '%s' raised an error; cached value unchanged", self.key)
             await asyncio.sleep(self.interval)
 
     def start(self) -> None:
@@ -38,7 +42,7 @@ class StateRegistry:
     def register(cls, key: str, fetcher: Callable, interval: float) -> None:
         if key in cls._sources and cls._sources[key].task is not None:
             cls._sources[key].stop()
-        cls._sources[key] = SourceEntry(fetcher=fetcher, interval=interval)
+        cls._sources[key] = SourceEntry(key=key, fetcher=fetcher, interval=interval)
 
     @classmethod
     async def start_all(cls) -> None:

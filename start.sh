@@ -40,8 +40,10 @@ echo "启动摄像头推流 (zmq:$ZMQ_PORT)..."
 ZMQ_BIND_PORT="$ZMQ_PORT" python3 Monitor/scripts/test_cam_pub.py &
 
 echo "启动 Web 服务 (http:$PORT)..."
+cd Monitor
 ZMQ_CAMERA_ADDR="tcp://localhost:$ZMQ_PORT" \
-python3 -m uvicorn Monitor.modules.monitor.server:app --host 0.0.0.0 --port "$PORT" &
+python3 -m uvicorn modules.monitor.server:app --host 0.0.0.0 --port "$PORT" &
+cd ..
 
 echo "Monitor 已启动 → http://$(hostname -I | awk '{print $1}'):$PORT"
 echo "停止服务: ./start.sh stop"

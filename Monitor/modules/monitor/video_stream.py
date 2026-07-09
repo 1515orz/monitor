@@ -10,7 +10,7 @@ import zmq
 import zmq.asyncio
 from ultralytics import YOLO
 
-ZMQ_CAMERA_ADDR = os.getenv("ZMQ_CAMERA_ADDR", "tcp://localhost:5555")
+ZMQ_CAMERA_ADDR = os.getenv("ZMQ_CAMERA_ADDR", "tcp://localhost:15555")
 MODEL_PATH = os.getenv("YOLO_MODEL", "/home/beng/Models/yolov8n.pt")
 FRAME_W = int(os.getenv("FRAME_W", "640"))
 FRAME_H = int(os.getenv("FRAME_H", "480"))

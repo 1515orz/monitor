@@ -1,6 +1,7 @@
+import os
+
 import cv2
 import zmq
-import struct
 
 def gst_pipeline(sensor_id=0, width=640, height=480, fps=30):
     return (
@@ -17,7 +18,7 @@ WIDTH, HEIGHT = 640, 480
 ctx = zmq.Context()
 sock = ctx.socket(zmq.PUB)
 sock.set_hwm(1)
-sock.bind("tcp://0.0.0.0:5555")
+sock.bind(f"tcp://0.0.0.0:{os.getenv('ZMQ_BIND_PORT', '15555')}")
 
 cap = cv2.VideoCapture(gst_pipeline(), cv2.CAP_GSTREAMER)
 if not cap.isOpened():
